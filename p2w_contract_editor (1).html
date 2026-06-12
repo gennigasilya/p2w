@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สร้างสัญญาจ้างโฆษณา P2W</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: #66CDAA;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  #gaming-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .icon-float {
+    position: absolute;
+    opacity: 0.65;
+    animation: floatIcon linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes floatIcon {
+    0%   { transform: translateY(110vh) rotate(0deg); }
+    100% { transform: translateY(-120vh) rotate(30deg); }
+  }
+
+  /* ===== EDITOR PANEL ===== */
+  #editor-panel {
+    background: rgba(245, 245, 245, 0.35);
+    color: #003333;
+    padding: 24px;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 360px;
+    overflow-y: auto;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-right: 1px solid #aaddcc;
+  }
+
+  #editor-panel h1 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #006644;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  #editor-panel .subtitle {
+    font-size: 12px;
+    color: #005544;
+    margin-bottom: 20px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #007755;
+    margin: 18px 0 10px;
+    border-top: 1px solid #bbddcc;
+    padding-top: 14px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  label {
+    font-size: 12px;
+    color: #111111;
+    font-weight: 400;
+  }
+
+  input, select {
+    background: #ADD8E6;
+    border: 1px solid #7ab8cc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: #003333;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 13px;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: #5599bb;
+    background: #c8e8f5;
+  }
+
+  input::placeholder { color: #6699aa; }
+
+  select option { background: #ADD8E6; color: #003333; }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #bbddcc;
+  }
+
+  button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.2px;
+  }
+
+  .btn-primary {
+    background: #00aa77;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #00cc88; transform: translateY(-1px); }
+
+  .btn-save {
+    background: #007755;
+    color: #ccffee;
+  }
+  .btn-save:hover { background: #009966; transform: translateY(-1px); }
+
+  .btn-reset {
+    background: transparent;
+    color: #005544;
+    border: 1px solid #1a4028;
+  }
+  .btn-reset:hover { color: #00c870; border-color: #00a85e; }
+
+  /* ===== CONTRACT PREVIEW ===== */
+  #preview-area {
+    margin-left: 360px;
+    padding: 40px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+  }
+
+  #contract {
+    background: #fff;
+    width: 794px;
+    min-height: 1123px;
+    padding: 64px 72px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+    border-radius: 4px;
+    font-size: 14.5px;
+    line-height: 2;
+    color: #111;
+    position: relative;
+  }
+
+  .contract-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .contract-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .contract-address {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .contract-body {
+    margin-top: 8px;
+  }
+
+  .contract-body p {
+    margin-bottom: 12px;
+    text-indent: 2em;
+    text-align: left;
+  }
+
+  .contract-clause {
+    margin: 20px 0 10px;
+    font-weight: 700;
+    text-indent: 0 !important;
+  }
+
+  .contract-clause-body {
+    text-indent: 2em;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .sig-block {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 24px;
+  }
+
+  .sig-line {
+    text-align: center;
+  }
+
+  .sig-line .line {
+    border-bottom: 1px solid #333;
+    margin-bottom: 6px;
+    height: 36px;
+  }
+
+  .sig-line .role {
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .sig-line .name {
+    font-size: 13px;
+    color: #333;
+  }
+
+  span[contenteditable] {
+    background: #edf4ff;
+    border-radius: 2px;
+    padding: 0 2px;
+    min-width: 10px;
+    display: inline-block;
+    cursor: text;
+  }
+
+  /* Print styles */
+  @media print {
+    #editor-panel { display: none !important; }
+    #preview-area {
+      margin-left: 0;
+      padding: 0;
+      background: #fff;
+    }
+    #contract {
+      box-shadow: none;
+      border-radius: 0;
+      width: 100%;
+      padding: 20mm 25mm;
+    }
+    button { display: none; }
+  }
+
+  @media (max-width: 900px) {
+    #editor-panel {
+      position: relative;
+      width: 100%;
+      height: auto;
+    }
+    #preview-area {
+      margin-left: 0;
+      padding: 20px;
+    }
+    #contract {
+      width: 100%;
+      padding: 32px 24px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="gaming-bg"></div>
+
+<!-- ===== EDITOR PANEL ===== -->
+<div id="editor-panel">
+  <h1>🎮 สัญญาสตรีมเมอร์</h1>
+  <p style="font-size:13px;font-weight:700;color:#007755;margin-bottom:2px;margin-top:-2px;">Tales Runner : Dream Journey</p>
+
+  <div class="section-label">📅 วันที่ทำสัญญา</div>
+  <div class="field-group">
+    <div class="field-row">
+      <label>วันที่</label>
+      <input type="date" id="contract_date">
+    </div>
+  </div>
+
+  <div class="section-label">🏢 ผู้ว่าจ้าง (บริษัท)</div>
+  <div class="field-group">
+    <div class="field-row">
+      <label>ชื่อบริษัท</label>
+      <input type="text" id="company_name" value="บริษัท เปย์ ทู วิน จำกัด">
+    </div>
+    <div class="field-row">
+      <label>ที่อยู่บริษัท</label>
+      <input type="text" id="company_address" value="เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง เขตสวนหลวง จังหวัดกรุงเทพมหานคร">
+    </div>
+    <div class="field-row">
+      <label>ชื่อกรรมการผู้มีอำนาจ</label>
+      <input type="text" id="director_name" value="นายพลภัทร ภูมิผล">
+    </div>
+  </div>
+
+  <div class="section-label">🎮 ผู้รับจ้าง (สตรีมเมอร์)</div>
+  <div class="field-group">
+    <div class="field-row">
+      <label>ชื่อ-นามสกุล</label>
+      <input type="text" id="streamer_name" placeholder="เช่น นางสาว กาญจน์สุดา มาศวัฒนกิจ">
+    </div>
+    <div class="field-row">
+      <label>เลขบัตรประจำตัวประชาชน</label>
+      <input type="text" id="streamer_id" placeholder="เช่น 1869900457821" maxlength="13">
+    </div>
+    <div class="field-row">
+      <label>ที่อยู่</label>
+      <input type="text" id="streamer_address" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์">
+    </div>
+    <div class="field-row">
+      <label>ชื่อช่อง</label>
+      <input type="text" id="channel_name" placeholder="เช่น paopao">
+    </div>
+    <div class="field-row">
+      <label>ลิงก์ช่อง</label>
+      <input type="text" id="channel_url" placeholder="https://www.tiktok.com/@...">
+    </div>
+  </div>
+
+  <div class="section-label">💰 ค่าตอบแทนและเงื่อนไข</div>
+  <div class="field-group">
+    <div class="field-row">
+      <label>ค่าตอบแทนต่อเดือน (บาท)</label>
+      <input type="number" id="payment" value="1500">
+    </div>
+    <div class="field-row">
+      <label>จำนวนคอนเทนต์ขั้นต่ำ/เดือน</label>
+      <input type="number" id="min_content" value="10">
+    </div>
+    <div class="field-row">
+      <label>ระยะเวลา Live ขั้นต่ำ (ชั่วโมง/ครั้ง)</label>
+      <input type="number" id="min_live_hours" value="2">
+    </div>
+    <div class="field-row">
+      <label>ชำระเงินภายในวันที่ (ของเดือนถัดไป)</label>
+      <input type="number" id="pay_day" value="5" min="1" max="31">
+    </div>
+    <div class="field-row">
+      <label>ระยะเวลาสัญญา</label>
+      <select id="contract_duration">
+        <option value="1 เดือน">1 เดือน</option>
+        <option value="2 เดือน">2 เดือน</option>
+        <option value="3 เดือน">3 เดือน</option>
+        <option value="6 เดือน">6 เดือน</option>
+        <option value="1 ปี">1 ปี</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-label">🎯 รายละเอียดเกม/แบรนด์</div>
+  <div class="field-group">
+    <div class="field-row">
+      <label>ชื่อเกม</label>
+      <input type="text" id="game_name" value="Tales Runner : Dream Journey">
+    </div>
+    <div class="field-row">
+      <label>ชื่อแบรนด์/บริการ</label>
+      <input type="text" id="brand_name" value="P2W TOPUP">
+    </div>
+    <div class="field-row">
+      <label>URL เว็บไซต์</label>
+      <input type="text" id="website_url" value="https://www.p2wtopup.com">
+    </div>
+  </div>
+
+  <div class="section-label">✍️ พยาน</div>
+  <div class="field-group">
+    <div class="field-row">
+      <label>พยานฝ่ายผู้ว่าจ้าง</label>
+      <input type="text" id="witness1" value="นายณัฐวุฒิ บุญสมสุวรรณ">
+    </div>
+    <div class="field-row">
+      <label>พยานฝ่ายผู้รับจ้าง</label>
+      <input type="text" id="witness2" value="นางสาวเจนนิกา ตปนียศิลป์">
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn-primary" onclick="updateContract()">🔄 อัปเดตสัญญา</button>
+    <button class="btn-save" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
+  </div>
+</div>
+
+<!-- ===== CONTRACT PREVIEW ===== -->
+<div id="preview-area">
+<div id="contract">
+  <div class="contract-header">
+    <div class="contract-title">สัญญาจ้างโฆษณา</div>
+    <div class="contract-address">
+      ทำที่ <span id="c_company_name">บริษัท เปย์ ทู วิน จำกัด</span><br>
+      <span id="c_company_address">เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง เขตสวนหลวง จังหวัดกรุงเทพมหานคร</span>
+    </div>
+  </div>
+
+  <div class="contract-body">
+    <p>
+      สัญญาฉบับนี้ทำขึ้นเมื่อวันที่ <span id="c_date">9 มิถุนายน พ.ศ. 2569</span> ระหว่าง
+      <span id="c_company_name2">บริษัท เปย์ ทู วิน จำกัด</span>
+      โดย <span id="c_director">นายพลภัทร ภูมิผล</span> กรรมการผู้มีอำนาจ
+      สำนักงานแห่งใหญ่ตั้งอยู่ <span id="c_company_address2">เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง เขตสวนหลวง จังหวัดกรุงเทพมหานคร</span>
+      ซึ่งต่อไปในสัญญาฉบับนี้จะเรียกว่า "ผู้ว่าจ้าง" ฝ่ายหนึ่ง
+    </p>
+    <p style="text-indent:0;">
+      กับ <span id="c_streamer_name">นางสาว กาญจน์สุดา มาศวัฒนกิจ</span><br>
+      หมายเลขบัตรประจำตัวประชาชน <span id="c_streamer_id">1869900457821</span><br>
+      ที่อยู่ <span id="c_streamer_address">1/26 ถ.หลังสวน ต.หลังสวน อ.หลังสวน จ.ชุมพร 86110</span><br>
+      ช่อง <span id="c_channel_name">paopao</span> (<span id="c_channel_url">https://www.tiktok.com/@paopao.kks</span>)<br>
+      ซึ่งต่อไปในสัญญาฉบับนี้ จะเรียกว่า "ผู้รับจ้าง" อีกฝ่ายหนึ่ง
+      คู่สัญญาทั้งสองฝ่ายตกลงกันดังต่อไปนี้
+    </p>
+
+    <p class="contract-clause">ข้อ 1 วัตถุประสงค์ของสัญญา</p>
+    <p class="contract-clause-body">
+      ผู้ว่าจ้างตกลงว่าจ้าง และผู้รับจ้างตกลงรับจ้างเพื่อดำเนินการประชาสัมพันธ์และโปรโมท
+      <span id="c_brand_name">P2W TOPUP</span> และเว็บไซต์ <span id="c_website_url">https://www.p2wtopup.com</span>
+    </p>
+
+    <p class="contract-clause">ข้อ 2 หน้าที่ของผู้รับจ้าง</p>
+    <p class="contract-clause-body">
+      ผู้รับจ้างตกลงดำเนินการประชาสัมพันธ์ <span id="c_brand_name2">P2W TOPUP</span>
+      ผ่านคอนเทนต์ของช่อง โดยภายในคลิปวิดีโอหรือรายการถ่ายทอดสด (Live)
+      ผู้รับจ้างจะต้องแสดงโลโก้ <span id="c_brand_name3">P2W TOPUP</span>,
+      ระบุลิงก์เว็บไซต์ <span id="c_website_url2">https://www.p2wtopup.com</span>
+      ในส่วนคำอธิบายของคลิปหรือโพสต์ และมีข้อความประชาสัมพันธ์
+      เช่น "<span id="c_brand_name4">P2W TOPUP</span> บริการเติมเกม เติมไว ราคาดี เปิดให้บริการตลอด 24 ชั่วโมง"
+    </p>
+    <p class="contract-clause-body">
+      ทั้งนี้ ผู้รับจ้างตกลงกล่าวถึง <span id="c_brand_name5">P2W TOPUP</span>
+      ภายในคอนเทนต์ดังกล่าว โดยหากเป็นคลิปวิดีโอจะกล่าวถึงในช่วงต้นของคลิปตามความเหมาะสม
+      และหากเป็นรายการถ่ายทอดสด (Live) จะกล่าวถึงระหว่างการถ่ายทอดสดตามความเหมาะสมของเนื้อหา
+    </p>
+
+    <p class="contract-clause">ข้อ 3 จำนวนคอนเทนต์</p>
+    <p class="contract-clause-body">
+      ผู้รับจ้างจะจัดทำคลิปวิดีโอและ/หรือรายการถ่ายทอดสด (Live) ตามรูปแบบการทำคอนเทนต์ปกติของช่อง
+      โดยมีจำนวนรวมกัน ไม่น้อยกว่า <span id="c_min_content">10</span> คอนเทนต์ต่อเดือน
+    </p>
+    <p class="contract-clause-body">
+      ทั้งนี้ หากเป็นรายการถ่ายทอดสด (Live) ควรมีระยะเวลาประมาณไม่น้อยกว่า
+      <span id="c_min_live">2</span> ชั่วโมงต่อครั้ง
+    </p>
+
+    <p class="contract-clause">ข้อ 4 เกมที่ใช้ในการทำคอนเทนต์</p>
+    <p class="contract-clause-body">
+      เนื้อหาของคลิปวิดีโอหรือรายการถ่ายทอดสด (Live) จะต้องเป็นการเล่นหรือเกี่ยวข้องกับเกม
+      <span id="c_game_name">Tales Runner : Dream Journey</span>
+      โดยผู้รับจ้างตกลงที่จะประชาสัมพันธ์บริการเติมเกมผ่าน <span id="c_brand_name6">P2W TOPUP</span>
+      และเว็บไซต์ <span id="c_website_url3">https://www.p2wtopup.com</span>
+      ภายในคอนเทนต์ดังกล่าวตามความเหมาะสม
+    </p>
+
+    <p class="contract-clause">ข้อ 5 ระยะเวลาสัญญาและค่าตอบแทน</p>
+    <p class="contract-clause-body">
+      ผู้ว่าจ้างตกลงชำระค่าตอบแทนให้แก่ผู้รับจ้างเป็นจำนวน <span id="c_payment">1,500</span> บาท ต่อเดือน
+      โดยผู้ว่าจ้างจะดำเนินการโอนเงินผ่านช่องทางออนไลน์ ภายในวันที่
+      <span id="c_pay_day">5</span> ของเดือนถัดไป
+    </p>
+    <p class="contract-clause-body">
+      สัญญาฉบับนี้มีระยะเวลา <span id="c_duration">1 เดือน</span>
+      นับตั้งแต่วันที่ตกลงกันระหว่างคู่สัญญา
+    </p>
+
+    <p style="margin-top:24px; text-indent:2em;">
+      สัญญาฉบับนี้ได้ทำขึ้นเป็นสองฉบับมีข้อความถูกต้องตรงกัน ซึ่งคู่สัญญาทั้งสองฝ่ายได้อ่านและ
+      เข้าใจข้อความแห่งสัญญาฉบับนี้โดยตลอดแล้ว จึงลงลายมือชื่อไว้เป็นสำคัญต่อหน้าพยาน
+      และคู่สัญญาต่างยึดถือไว้ฝ่ายละหนึ่งฉบับ
+    </p>
+
+    <div class="sig-block">
+      <div class="sig-line">
+        <div class="line"></div>
+        <div class="role">ผู้ว่าจ้าง</div>
+        <div class="name">(<span id="c_director2">นายพลภัทร ภูมิผล</span>)</div>
+      </div>
+      <div class="sig-line">
+        <div class="line"></div>
+        <div class="role">ผู้รับจ้าง</div>
+        <div class="name">(<span id="c_streamer_name2">นางสาว กาญจน์สุดา มาศวัฒนกิจ</span>)</div>
+      </div>
+      <div class="sig-line">
+        <div class="line"></div>
+        <div class="role">พยาน</div>
+        <div class="name">(<span id="c_witness1">นายณัฐวุฒิ บุญสมสุวรรณ</span>)</div>
+      </div>
+      <div class="sig-line">
+        <div class="line"></div>
+        <div class="role">พยาน</div>
+        <div class="name">(<span id="c_witness2">นางสาวเจนนิกา ตปนียศิลป์</span>)</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  // Set today's date as default
+  const today = new Date();
+  document.getElementById('contract_date').value = today.toISOString().split('T')[0];
+
+  function thaiDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                    'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    return `${d.getDate()} ${months[d.getMonth()]} พ.ศ. ${d.getFullYear() + 543}`;
+  }
+
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function updateContract() {
+    const v = id => document.getElementById(id).value.trim();
+
+    const dateStr = v('contract_date');
+    const payment = Number(v('payment')).toLocaleString('th-TH');
+
+    set('c_date', thaiDate(dateStr));
+    set('c_company_name', v('company_name'));
+    set('c_company_name2', v('company_name'));
+    set('c_company_address', v('company_address'));
+    set('c_company_address2', v('company_address'));
+    set('c_director', v('director_name'));
+    set('c_director2', v('director_name'));
+
+    set('c_streamer_name', v('streamer_name'));
+    set('c_streamer_name2', v('streamer_name'));
+    set('c_streamer_id', v('streamer_id'));
+    set('c_streamer_address', v('streamer_address'));
+    set('c_channel_name', v('channel_name'));
+    set('c_channel_url', v('channel_url'));
+
+    set('c_brand_name', v('brand_name'));
+    set('c_brand_name2', v('brand_name'));
+    set('c_brand_name3', v('brand_name'));
+    set('c_brand_name4', v('brand_name'));
+    set('c_brand_name5', v('brand_name'));
+    set('c_brand_name6', v('brand_name'));
+
+    set('c_website_url', v('website_url'));
+    set('c_website_url2', v('website_url'));
+    set('c_website_url3', v('website_url'));
+
+    set('c_game_name', v('game_name'));
+    set('c_min_content', v('min_content'));
+    set('c_min_live', v('min_live_hours'));
+    set('c_payment', payment);
+    set('c_pay_day', v('pay_day'));
+    set('c_duration', document.getElementById('contract_duration').value);
+
+    set('c_witness1', v('witness1'));
+    set('c_witness2', v('witness2'));
+  }
+
+
+
+  // Auto-update on input change
+  document.querySelectorAll('#editor-panel input, #editor-panel select').forEach(el => {
+    el.addEventListener('input', updateContract);
+  });
+
+  // Initial render
+  updateContract();
+</script>
+
+<script>
+(function(){
+  var icons = [
+    // Mouse
+    '<svg viewBox="0 0 60 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="20" width="50" height="65" rx="25" stroke="#0a7a45" stroke-width="2.5"/><line x1="30" y1="20" x2="30" y2="55" stroke="#0a7a45" stroke-width="2"/><circle cx="30" cy="65" r="5" stroke="#0a7a45" stroke-width="2"/></svg>',
+    // Keyboard
+    '<svg viewBox="0 0 110 50" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="104" height="44" rx="7" stroke="#0a7a45" stroke-width="2.5"/><rect x="10" y="10" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="24" y="10" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="38" y="10" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="52" y="10" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="66" y="10" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="80" y="10" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="10" y="23" width="13" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="27" y="23" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="41" y="23" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="55" y="23" width="10" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="69" y="23" width="13" height="9" rx="2" stroke="#0a7a45" stroke-width="1.8"/><rect x="20" y="36" width="70" height="8" rx="3" stroke="#0a7a45" stroke-width="1.8"/></svg>',
+    // Headphones
+    '<svg viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 38 C10 18 70 18 70 38" stroke="#0a7a45" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="35" width="14" height="24" rx="6" stroke="#0a7a45" stroke-width="2.2"/><rect x="62" y="35" width="14" height="24" rx="6" stroke="#0a7a45" stroke-width="2.2"/></svg>',
+    // Monitor
+    '<svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="90" height="58" rx="6" stroke="#0a7a45" stroke-width="2.5"/><line x1="35" y1="63" x2="30" y2="75" stroke="#0a7a45" stroke-width="2"/><line x1="65" y1="63" x2="70" y2="75" stroke="#0a7a45" stroke-width="2"/><line x1="25" y1="75" x2="75" y2="75" stroke="#0a7a45" stroke-width="2"/><rect x="12" y="12" width="76" height="44" rx="3" stroke="#0a7a45" stroke-width="1.5"/></svg>',
+    // CPU / Chip
+    '<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="40" height="40" rx="5" stroke="#0a7a45" stroke-width="2.5"/><rect x="28" y="28" width="24" height="24" rx="3" stroke="#0a7a45" stroke-width="1.8"/><line x1="28" y1="8" x2="28" y2="20" stroke="#0a7a45" stroke-width="2"/><line x1="40" y1="8" x2="40" y2="20" stroke="#0a7a45" stroke-width="2"/><line x1="52" y1="8" x2="52" y2="20" stroke="#0a7a45" stroke-width="2"/><line x1="28" y1="60" x2="28" y2="72" stroke="#0a7a45" stroke-width="2"/><line x1="40" y1="60" x2="40" y2="72" stroke="#0a7a45" stroke-width="2"/><line x1="52" y1="60" x2="52" y2="72" stroke="#0a7a45" stroke-width="2"/><line x1="8" y1="28" x2="20" y2="28" stroke="#0a7a45" stroke-width="2"/><line x1="8" y1="40" x2="20" y2="40" stroke="#0a7a45" stroke-width="2"/><line x1="8" y1="52" x2="20" y2="52" stroke="#0a7a45" stroke-width="2"/><line x1="60" y1="28" x2="72" y2="28" stroke="#0a7a45" stroke-width="2"/><line x1="60" y1="40" x2="72" y2="40" stroke="#0a7a45" stroke-width="2"/><line x1="60" y1="52" x2="72" y2="52" stroke="#0a7a45" stroke-width="2"/></svg>',
+    // Speaker
+    '<svg viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="50" height="70" rx="8" stroke="#0a7a45" stroke-width="2.5"/><circle cx="30" cy="28" r="12" stroke="#0a7a45" stroke-width="2"/><circle cx="30" cy="28" r="5" stroke="#0a7a45" stroke-width="1.8"/><circle cx="30" cy="60" r="7" stroke="#0a7a45" stroke-width="2"/><circle cx="30" cy="60" r="2.5" stroke="#0a7a45" stroke-width="1.5"/></svg>',
+    // Gamepad
+    '<svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 20 Q10 10 25 8 L75 8 Q90 10 85 20 L80 50 Q78 58 68 55 L55 45 L45 45 L32 55 Q22 58 20 50 Z" stroke="#0a7a45" stroke-width="2.5"/><line x1="28" y1="28" x2="28" y2="40" stroke="#0a7a45" stroke-width="2"/><line x1="22" y1="34" x2="34" y2="34" stroke="#0a7a45" stroke-width="2"/><circle cx="65" cy="28" r="3.5" stroke="#0a7a45" stroke-width="1.8"/><circle cx="75" cy="34" r="3.5" stroke="#0a7a45" stroke-width="1.8"/><circle cx="55" cy="34" r="3.5" stroke="#0a7a45" stroke-width="1.8"/><circle cx="65" cy="40" r="3.5" stroke="#0a7a45" stroke-width="1.8"/></svg>'
+  ];
+
+  var bg = document.getElementById('gaming-bg');
+  var count = 45;
+
+  var colors = ['#000000','#000000','#000000','#000000'];
+  for (var i = 0; i < count; i++) {
+    var el = document.createElement('div');
+    el.className = 'icon-float';
+    var color = colors[i % colors.length];
+    var svgStr = icons[i % icons.length].replace(/stroke="#0a7a45"/g, 'stroke="' + color + '"');
+    el.innerHTML = svgStr;
+    var size = 50 + Math.random() * 70;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.top = 'auto';
+    el.style.bottom = '-15vh';
+    var duration = 30 + Math.random() * 30;
+    var delay = -(Math.random() * duration);
+    el.style.animationDuration = duration + 's';
+    el.style.animationDelay = delay + 's';
+    bg.appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>
