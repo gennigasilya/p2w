@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -98,8 +97,8 @@
   }
 
   input, select {
-    background: #FAF9F6;
-    border: 1px solid #ddd;
+    background: #FFFFFF;
+    border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px 10px;
     color: #001a0f;
@@ -112,12 +111,12 @@
   input:focus, select:focus {
     outline: none;
     border-color: #5599bb;
-    background: #F5F5F0;
+    background: #FFFFFF;
   }
 
   input::placeholder { color: #6699aa; }
 
-  select option { background: #FAF9F6; color: #003333; }
+  select option { background: #FFFFFF; color: #003333; }
 
   .btn-group {
     display: flex;
@@ -180,20 +179,22 @@
     border-radius: 4px;
     font-size: 11pt;
     line-height: 1.9;
+    font-family: 'Sarabun', sans-serif;
     color: #111;
     position: relative;
   }
 
   .contract-header {
-    text-align: center;
-    margin-bottom: 28px;
+    text-align: left;
+    margin-bottom: 20px;
   }
 
   .contract-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-align: center;
   }
 
   .contract-address {
@@ -445,11 +446,12 @@
 <!-- ===== CONTRACT PREVIEW ===== -->
 <div id="preview-area">
 <div id="contract">
-  <div class="contract-header">
-    <div class="contract-title">สัญญาจ้างโฆษณา</div>
-    <div class="contract-address">
+  <div class="contract-header" style="margin-bottom:20px;">
+    <div style="height:2em;"></div><div class="contract-title" style="font-family:'Sarabun',sans-serif; font-size:15pt; font-weight:700; text-align:center;">สัญญาจ้างโฆษณา</div>
+    <div style="text-align:right; font-size:11pt; line-height:1.9; color:#111; font-family:'Sarabun',sans-serif; margin-top:6px;">
       ทำที่ <span id="c_company_name">บริษัท เปย์ ทู วิน จำกัด</span><br>
-      <span id="c_company_address">เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง เขตสวนหลวง จังหวัดกรุงเทพมหานคร</span>
+      เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง<br>
+      เขตสวนหลวง จังหวัดกรุงเทพมหานคร
     </div>
   </div>
 
