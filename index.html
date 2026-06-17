@@ -421,6 +421,10 @@
       <label>URL เว็บไซต์</label>
       <input type="text" id="website_url" value="https://www.p2wtopup.com">
     </div>
+    <div class="field-row">
+      <label>เงื่อนไขเพิ่มเติม (ถ้ามี)</label>
+      <input type="text" id="extra_condition" placeholder="เช่น ต้องสตรีมเกมนี้อย่างน้อย 1 ครั้งต่อสัปดาห์">
+    </div>
   </div>
 
   <div class="section-label">✍️ พยาน</div>
@@ -511,6 +515,9 @@
       และเว็บไซต์ <span id="c_website_url3">https://www.p2wtopup.com</span>
       ภายในคอนเทนต์ดังกล่าวตามความเหมาะสม
     </p>
+    <p class="contract-clause-body" id="extra_condition_paragraph" style="display:none;">
+      ทั้งนี้ คู่สัญญาทั้งสองฝ่ายตกลงเงื่อนไขเพิ่มเติมดังนี้ <span id="c_extra_condition"></span>
+    </p>
 
     <p class="contract-clause">ข้อ 5 ระยะเวลาสัญญาและค่าตอบแทน</p>
     <p class="contract-clause-body">
@@ -599,6 +606,15 @@
 
     set('c_witness1', v('witness1'));
     set('c_witness2', v('witness2'));
+
+    const extraCondition = v('extra_condition');
+    const extraParagraph = document.getElementById('extra_condition_paragraph');
+    if (extraCondition) {
+      set('c_extra_condition', extraCondition);
+      extraParagraph.style.display = '';
+    } else {
+      extraParagraph.style.display = 'none';
+    }
   }
 
 
