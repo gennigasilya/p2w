@@ -97,11 +97,11 @@
   }
 
   input, select {
-    background: #ADD8E6;
-    border: 1px solid #7ab8cc;
+    background: #FFFFFF;
+    border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px 10px;
-    color: #003333;
+    color: #001a0f;
     font-family: 'Sarabun', sans-serif;
     font-size: 13px;
     width: 100%;
@@ -111,12 +111,12 @@
   input:focus, select:focus {
     outline: none;
     border-color: #5599bb;
-    background: #c8e8f5;
+    background: #FFFFFF;
   }
 
   input::placeholder { color: #6699aa; }
 
-  select option { background: #ADD8E6; color: #003333; }
+  select option { background: #FFFFFF; color: #003333; }
 
   .btn-group {
     display: flex;
@@ -177,22 +177,24 @@
     padding: 64px 72px;
     box-shadow: 0 4px 32px rgba(0,0,0,0.12);
     border-radius: 4px;
-    font-size: 14.5px;
-    line-height: 2;
+    font-size: 11pt;
+    line-height: 1.9;
+    font-family: 'Sarabun', sans-serif;
     color: #111;
     position: relative;
   }
 
   .contract-header {
-    text-align: center;
-    margin-bottom: 28px;
+    text-align: left;
+    margin-bottom: 20px;
   }
 
   .contract-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-align: center;
   }
 
   .contract-address {
@@ -215,12 +217,24 @@
     margin: 20px 0 10px;
     font-weight: 700;
     text-indent: 0 !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .contract-clause + p,
+  .contract-clause + .contract-clause-body {
+    page-break-before: avoid;
+    break-before: avoid;
   }
 
   .contract-clause-body {
-    text-indent: 2em;
-    text-align: left;
-    margin-bottom: 8px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .sig-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .sig-block {
@@ -261,19 +275,42 @@
 
   /* Print styles */
   @media print {
+    @page {
+      margin: 20mm 25mm;
+      size: A4;
+    }
+    @page :first { margin-top: 20mm; }
+
     #editor-panel { display: none !important; }
+    #gaming-bg { display: none !important; }
+    body {
+      background: #fff !important;
+      font-family: 'Sarabun', sans-serif !important;
+      font-size: 11pt !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    body::before { display: none !important; }
     #preview-area {
-      margin-left: 0;
-      padding: 0;
-      background: #fff;
+      margin-left: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+      display: block !important;
     }
     #contract {
-      box-shadow: none;
-      border-radius: 0;
-      width: 100%;
-      padding: 20mm 25mm;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font-size: 11pt !important;
+      font-family: 'Sarabun', sans-serif !important;
+      color: #000 !important;
+      line-height: 1.9 !important;
     }
-    button { display: none; }
+    button, #drive-status { display: none !important; }
+    .icon-float { display: none !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 
   @media (max-width: 900px) {
@@ -299,15 +336,6 @@
 <!-- ===== EDITOR PANEL ===== -->
 <div id="editor-panel">
   <h1>🎮 สัญญาสตรีมเมอร์</h1>
-  <p style="font-size:13px;font-weight:700;color:#007755;margin-bottom:2px;margin-top:-2px;">Tales Runner : Dream Journey</p>
-
-  <div class="section-label">📅 วันที่ทำสัญญา</div>
-  <div class="field-group">
-    <div class="field-row">
-      <label>วันที่</label>
-      <input type="date" id="contract_date">
-    </div>
-  </div>
 
   <div class="section-label">🏢 ผู้ว่าจ้าง (บริษัท)</div>
   <div class="field-group">
@@ -393,6 +421,10 @@
       <label>URL เว็บไซต์</label>
       <input type="text" id="website_url" value="https://www.p2wtopup.com">
     </div>
+    <div class="field-row">
+      <label>เงื่อนไขเพิ่มเติม (ถ้ามี)</label>
+      <input type="text" id="extra_condition" placeholder="เช่น ต้องสตรีมเกมนี้อย่างน้อย 1 ครั้งต่อสัปดาห์">
+    </div>
   </div>
 
   <div class="section-label">✍️ พยาน</div>
@@ -410,23 +442,26 @@
   <div class="btn-group">
     <button class="btn-primary" onclick="updateContract()">🔄 อัปเดตสัญญา</button>
     <button class="btn-save" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
+    <button class="btn-save" onclick="saveToDrive()" style="background:#0f9d58;color:#fff;">📁 บันทึกลง Google Drive</button>
+    <div id="drive-status" style="font-size:12px;color:#007755;min-height:16px;text-align:center;"></div>
   </div>
 </div>
 
 <!-- ===== CONTRACT PREVIEW ===== -->
 <div id="preview-area">
 <div id="contract">
-  <div class="contract-header">
-    <div class="contract-title">สัญญาจ้างโฆษณา</div>
-    <div class="contract-address">
+  <div class="contract-header" style="margin-bottom:20px;">
+    <div style="height:2em;"></div><div class="contract-title" style="font-family:'Sarabun',sans-serif; font-size:15pt; font-weight:700; text-align:center;">สัญญาจ้างโฆษณา</div>
+    <div style="text-align:right; font-size:11pt; line-height:1.9; color:#111; font-family:'Sarabun',sans-serif; margin-top:6px;">
       ทำที่ <span id="c_company_name">บริษัท เปย์ ทู วิน จำกัด</span><br>
-      <span id="c_company_address">เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง เขตสวนหลวง จังหวัดกรุงเทพมหานคร</span>
+      เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง<br>
+      เขตสวนหลวง จังหวัดกรุงเทพมหานคร
     </div>
   </div>
 
   <div class="contract-body">
     <p>
-      สัญญาฉบับนี้ทำขึ้นเมื่อวันที่ <span id="c_date">9 มิถุนายน พ.ศ. 2569</span> ระหว่าง
+      สัญญาฉบับนี้ทำขึ้นระหว่าง
       <span id="c_company_name2">บริษัท เปย์ ทู วิน จำกัด</span>
       โดย <span id="c_director">นายพลภัทร ภูมิผล</span> กรรมการผู้มีอำนาจ
       สำนักงานแห่งใหญ่ตั้งอยู่ <span id="c_company_address2">เลขที่ 1991/166 ถนนอ่อนนุช แขวงสวนหลวง เขตสวนหลวง จังหวัดกรุงเทพมหานคร</span>
@@ -480,6 +515,9 @@
       และเว็บไซต์ <span id="c_website_url3">https://www.p2wtopup.com</span>
       ภายในคอนเทนต์ดังกล่าวตามความเหมาะสม
     </p>
+    <p class="contract-clause-body" id="extra_condition_paragraph" style="display:none;">
+      ทั้งนี้ คู่สัญญาทั้งสองฝ่ายตกลงเงื่อนไขเพิ่มเติมดังนี้ <span id="c_extra_condition"></span>
+    </p>
 
     <p class="contract-clause">ข้อ 5 ระยะเวลาสัญญาและค่าตอบแทน</p>
     <p class="contract-clause-body">
@@ -525,18 +563,6 @@
 </div>
 
 <script>
-  // Set today's date as default
-  const today = new Date();
-  document.getElementById('contract_date').value = today.toISOString().split('T')[0];
-
-  function thaiDate(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
-                    'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-    return `${d.getDate()} ${months[d.getMonth()]} พ.ศ. ${d.getFullYear() + 543}`;
-  }
-
   function set(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
@@ -545,10 +571,7 @@
   function updateContract() {
     const v = id => document.getElementById(id).value.trim();
 
-    const dateStr = v('contract_date');
     const payment = Number(v('payment')).toLocaleString('th-TH');
-
-    set('c_date', thaiDate(dateStr));
     set('c_company_name', v('company_name'));
     set('c_company_name2', v('company_name'));
     set('c_company_address', v('company_address'));
@@ -583,6 +606,15 @@
 
     set('c_witness1', v('witness1'));
     set('c_witness2', v('witness2'));
+
+    const extraCondition = v('extra_condition');
+    const extraParagraph = document.getElementById('extra_condition_paragraph');
+    if (extraCondition) {
+      set('c_extra_condition', extraCondition);
+      extraParagraph.style.display = '';
+    } else {
+      extraParagraph.style.display = 'none';
+    }
   }
 
 
@@ -638,6 +670,62 @@
     bg.appendChild(el);
   }
 })();
+</script>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const CLIENT_ID = '310014726808-efvcrgtt8375k795ou7ifq16uh25p2k5.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+function saveToDrive() {
+  const status = document.getElementById('drive-status');
+  status.textContent = 'กำลังเชื่อมต่อ Google...';
+
+  const tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: async (tokenResponse) => {
+      if (tokenResponse.error) {
+        status.textContent = '❌ เข้าสู่ระบบไม่สำเร็จ';
+        return;
+      }
+      await uploadToDrive(tokenResponse.access_token);
+    }
+  });
+  tokenClient.requestAccessToken();
+}
+
+async function uploadToDrive(token) {
+  const status = document.getElementById('drive-status');
+  status.textContent = '⏳ กำลังบันทึก...';
+
+  updateContract();
+  const streamer = document.getElementById('streamer_name').value || 'contract';
+  const fileName = 'สัญญา_' + streamer.replace(/\s+/g,'_') + '.html';
+  const html = '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>' + fileName + '</title></head><body>' + document.getElementById('contract').outerHTML + '</body></html>';
+  const blob = new Blob([html], {type: 'text/html'});
+
+  const metadata = { name: fileName, mimeType: 'text/html' };
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+  form.append('file', blob);
+
+  try {
+    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token },
+      body: form
+    });
+    const data = await res.json();
+    if (data.id) {
+      status.innerHTML = '✅ บันทึกแล้ว! <a href="https://drive.google.com/file/d/' + data.id + '/view" target="_blank" style="color:#007755;">เปิดใน Drive</a>';
+    } else {
+      status.textContent = '❌ บันทึกไม่สำเร็จ';
+    }
+  } catch(e) {
+    status.textContent = '❌ เกิดข้อผิดพลาด';
+  }
+}
 </script>
 </body>
 </html>
